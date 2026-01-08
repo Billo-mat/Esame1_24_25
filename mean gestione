@@ -1,0 +1,10 @@
+# --- ESERCIZIO 5 ---
+
+# 1. Raggruppiamo per le due tipologie di gestione
+# 2. Selezioniamo la colonna della distanza media (calcolata nell'es 4)
+# 3. Calcoliamo la media finale (.mean)
+risultato_finale = df.groupby(['organic', 'alternate_management'])['avg_dist_same'].mean()
+
+# Stampiamo il risultato
+print("Media della distanza per tipo di gestione del terreno:")
+print(risultato_finale)
