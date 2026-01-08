@@ -1,0 +1,10 @@
+# Load the data
+df = pd.read_csv('butterfly_data.csv')
+
+# Convert columns to boolean type
+df['organic'] = df['organic'].astype(bool)
+df['alternate_management'] = df['alternate_management'].astype(bool)
+
+# Quick check of the data types and first few rows
+print(df.dtypes)
+print(df.head())
