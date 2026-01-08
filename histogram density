@@ -1,0 +1,29 @@
+# --- ESERCIZIO 7 ---
+
+# 1. Separiamo i dati in due gruppi
+# Usiamo la colonna 'avg_dist_same' creata nell'esercizio 4
+dist_alt = df[df['alternate_management'] == True]['avg_dist_same']
+dist_no_alt = df[df['alternate_management'] == False]['avg_dist_same']
+
+plt.figure(figsize=(10, 6))
+
+# 2. Creiamo i due istogrammi sovrapposti
+# 'density=True' trasforma il conteggio in densità (richiesto dalla consegna)
+# 'alpha' rende i colori semitrasparenti per vedere le zone di sovrapposizione
+plt.hist(dist_alt, bins=20, density=True, alpha=0.5, 
+         color='green', label='Alternate Management', edgecolor='darkgreen')
+
+plt.hist(dist_no_alt, bins=20, density=True, alpha=0.5, 
+         color='orange', label='Not Alternate Management', edgecolor='darkorange')
+
+# 3. Formattazione assi e titolo
+plt.title('Confronto Densità Distanze: Gestione Alternativa vs Standard', fontsize=14)
+plt.xlabel('Distanza media (avg_dist_same)', fontsize=12)
+plt.ylabel('Densità', fontsize=12)
+
+# 4. Legenda (obbligatoria da consegna)
+plt.legend(loc='upper right')
+
+# Visualizzazione
+plt.grid(axis='y', linestyle=':', alpha=0.6)
+plt.show()
