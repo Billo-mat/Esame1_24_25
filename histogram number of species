@@ -1,0 +1,31 @@
+# --- ESERCIZIO 6 ---
+
+plt.figure(figsize=(10, 6))
+
+# Calcoliamo i limiti per i bins in modo che ogni numero intero abbia la sua barra
+min_species = int(df['no_species'].min())
+max_species = int(df['no_species'].max())
+
+# Creazione dell'istogramma
+plt.hist(df['no_species'], 
+         bins=range(min_species, max_species + 2), # +2 per includere l'ultimo valore
+         edgecolor='black', 
+         align='left',          # Allinea la barra a sinistra del valore del bin (centrandola sul numero)
+         color='skyblue', 
+         alpha=0.8, 
+         label='Occorrenze per numero di specie')
+
+# Configurazione degli assi e del titolo
+plt.title('Distribuzione del numero di specie osservate', fontsize=14)
+plt.xlabel('Numero di specie (no_species)', fontsize=12)
+plt.ylabel('Frequenza (Conteggio occorrenze)', fontsize=12)
+
+# Opzionale: forziamo i numeri interi sull'asse X per chiarezza
+plt.xticks(range(min_species, max_species + 1))
+
+# Aggiunta della legenda come richiesto
+plt.legend(loc='upper right')
+
+# Visualizzazione
+plt.grid(axis='y', linestyle='--', alpha=0.7) # Una griglia leggera per leggere meglio i valori
+plt.show()
