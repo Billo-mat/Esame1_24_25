@@ -1,0 +1,169 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import doctest
+import pytensor
+import os
+import pymc as pm
+import arviz as az
+
+# Forza PyTensor a non usare il compilatore C++
+pytensor.config.cxx = ""
+
+# Opzionale: pulisce la cache che ha causato l'errore
+os.environ["PYTENSOR_FLAGS"] = "base_compiledir=force_compile"
+# --- ESERCIZIO 1 ---
+df = pd.read_csv('butterfly_data.csv')
+df['organic'] = df['organic'].astype(bool)
+df['alternate_management'] = df['alternate_management'].astype(bool)
+
+# --- ESERCIZIO 2 ---
+plt.figure(figsize=(10, 6))
+
+for subarea in df['subarea'].unique():
+    subset = df[df['subarea'] == subarea]
+    plt.scatter(subset['x'], subset['y'], label=subarea, alpha=0.7)
+
+plt.title('Butterfly Population: x vs y by Subarea')
+plt.xlabel('x coordinate')
+plt.ylabel('y coordinate')
+plt.legend(title='Subarea', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
+
+def mdistance(
+    p1: tuple[np.ndarray, np.ndarray],
+    p2: tuple[np.ndarray, np.ndarray]
+) -> np.ndarray:
+    """
+    Calcola la distanza di Manhattan tra punti 2D.
+    Supporta sia scalari sia array NumPy (broadcasting).
+
+    >>> mdistance((0.0, 0.0), (3.0, 4.0))
+    7.0
+    """
+    dx = np.abs(p1[0] - p2[0])
+    dy = np.abs(p1[1] - p2[1])
+    return dx + dy
+
+
+def compute_avg_manhattan_dist(group: pd.DataFrame) -> pd.Series:
+    N = len(group)
+    if N <= 1:
+        return pd.Series(0.0, index=group.index)
+
+    x = group['x'].to_numpy()
+    y = group['y'].to_numpy()
+
+    # Coordinate in forma vettoriale
+    p1 = (x[:, None], y[:, None])
+    p2 = (x[None, :], y[None, :])
+
+    dist_matrix = mdistance(p1, p2)
+    avg_dist = dist_matrix.sum(axis=1) / (N - 1)
+
+    return pd.Series(avg_dist, index=group.index)
+
+df['avg_dist_same'] = (
+    df.groupby(['year', 'month', 'subarea'], group_keys=False)[['x', 'y']]
+      .apply(compute_avg_manhattan_dist)
+    )
+
+# --- ESERCIZIO 5 ---
+
+# 1. Raggruppiamo per le due tipologie di gestione
+# 2. Selezioniamo la colonna della distanza media (calcolata nell'es 4)
+# 3. Calcoliamo la media finale (.mean)
+risultato_finale = df.groupby(['organic', 'alternate_management'])['avg_dist_same'].mean()
+
+# Stampiamo il risultato
+print("Media della distanza per tipo di gestione del terreno:")
+print(risultato_finale)
+
+# --- ESERCIZIO 6 ---
+
+plt.figure(figsize=(10, 6))
+
+# Calcoliamo i limiti per i bins in modo che ogni numero intero abbia la sua barra
+min_species = int(df['no_species'].min())
+max_species = int(df['no_species'].max())
+
+# Creazione dell'istogramma
+plt.hist(df['no_species'], 
+         bins=range(min_species, max_species + 2), # +2 per includere l'ultimo valore
+         edgecolor='black', 
+         align='left',          # Allinea la barra a sinistra del valore del bin (centrandola sul numero)
+         color='skyblue', 
+         alpha=0.8, 
+         label='Occorrenze per numero di specie')
+
+# Configurazione degli assi e del titolo
+plt.title('Distribuzione del numero di specie osservate', fontsize=14)
+plt.xlabel('Numero di specie (no_species)', fontsize=12)
+plt.ylabel('Frequenza (Conteggio occorrenze)', fontsize=12)
+
+# Opzionale: forziamo i numeri interi sull'asse X per chiarezza
+plt.xticks(range(min_species, max_species + 1))
+
+# Aggiunta della legenda come richiesto
+plt.legend(loc='upper right')
+
+# Visualizzazione
+plt.grid(axis='y', linestyle='--', alpha=0.7) # Una griglia leggera per leggere meglio i valori
+plt.show()
+
+# --- ESERCIZIO 7 ---
+
+# 1. Separiamo i dati in due gruppi
+# Usiamo la colonna 'avg_dist_same' creata nell'esercizio 4
+dist_alt = df[df['alternate_management'] == True]['avg_dist_same']
+dist_no_alt = df[df['alternate_management'] == False]['avg_dist_same']
+
+plt.figure(figsize=(10, 6))
+
+# 2. Creiamo i due istogrammi sovrapposti
+# 'density=True' trasforma il conteggio in densità (richiesto dalla consegna)
+# 'alpha' rende i colori semitrasparenti per vedere le zone di sovrapposizione
+plt.hist(dist_alt, bins=20, density=True, alpha=0.5, 
+         color='green', label='Alternate Management', edgecolor='darkgreen')
+
+plt.hist(dist_no_alt, bins=20, density=True, alpha=0.5, 
+         color='orange', label='Not Alternate Management', edgecolor='darkorange')
+
+# 3. Formattazione assi e titolo
+plt.title('Confronto Densità Distanze: Gestione Alternativa vs Standard', fontsize=14)
+plt.xlabel('Distanza media (avg_dist_same)', fontsize=12)
+plt.ylabel('Densità', fontsize=12)
+
+# 4. Legenda (obbligatoria da consegna)
+plt.legend(loc='upper right')
+
+# Visualizzazione
+plt.grid(axis='y', linestyle=':', alpha=0.6)
+plt.show()
+
+
+x_mean = df['x'].mean()
+x_std = df['x'].std()
+
+y_mean = df['y'].mean()
+y_std = df['y'].std()
+
+X = (df['x'] - x_mean) / x_std
+Y = (df['y'] - y_mean) / y_std
+
+# --- modello ---
+with pm.Model() as model:
+
+    alpha = pm.Normal('alpha', mu=0, sigma=2)
+    beta = pm.Normal('beta', mu=0, sigma=2)
+    sigma = pm.Exponential('sigma', lam=1)
+
+    mu = alpha + beta * X
+
+    Y_obs = pm.Normal('Y_obs', mu=mu, sigma=sigma, observed=Y)
+
+    trace = pm.sample(2000, tune=1000, return_inferencedata=True)
+
+# --- summary ---
+print(az.summary(trace))
