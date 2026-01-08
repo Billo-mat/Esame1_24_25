@@ -1,0 +1,111 @@
+# ---
+# jupyter:
+#   jupytext:
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.16.6
+#   kernelspec:
+#     display_name: Python 3 (ipykernel)
+#     language: python
+#     name: python3
+# ---
+
+# # Programming in Python
+# ## Exam: September 16, 2025
+#
+#
+# You can solve the exercises below by using standard Python 3.12 libraries, NumPy, Matplotlib, Pandas, PyMC.
+# You can browse the documentation: [Python](https://docs.python.org/3.12/), [NumPy](https://numpy.org/doc/1.26/index.html), [Matplotlib](https://matplotlib.org/3.10.0/users/index.html), [Pandas](https://pandas.pydata.org/pandas-docs/version/2.2/index.html), [PyMC](https://www.pymc.io/projects/docs/en/stable/api.html).
+# You can also look at the [slides](https://homes.di.unimi.it/monga/lucidi2425/pyqb00.pdf) or your code on [GitHub](https://github.com).
+#
+#
+# **The exam is "open book", but it is strictly forbidden to communicate with others or "ask questions" online (i.e., stackoverflow is ok if the answer is already there, but you cannot ask a new question or use ChatGPT and similar products). Suspicious canned answers or plagiarism among student solutions will cause the invalidation of the exam for all the people involved.**
+#
+# To test examples in docstrings use
+#
+# ```python
+# import doctest
+# doctest.testmod()
+# ```
+
+# **SOLVE EACH EXERCISE IN ONE OR MORE NOTEBOOK CELLS AFTER THE QUESTION.**
+
+import numpy as np
+import pandas as pd  # type: ignore
+import matplotlib.pyplot as plt # type: ignore
+import pymc as pm   # type: ignore
+import arviz as az   # type: ignore
+
+# ### Exercise 1 (max 2 points)
+#
+# The file [butterfly_data.csv](./butterfly_data.csv) contains data about a population of butterflies.
+#
+# Load the data in a pandas dataframe; be sure the columns `organic` and `alternate_management` have the `bool` dtype.
+
+pass
+
+# ### Exercise 2 (max 4 points)
+#
+# Make a figure with a scatterplot of the `x` and `y` values; each point should be colored according its `subarea`. Use a proper title and a legend.
+#
+
+pass
+
+# ### Exercise 3 (max 7 points)
+#
+# Define a function `mdistance` that takes two points in a 2D Cartesian plane and returns the Manhattan distance ($d = |x_1-x_2| + |y_1-y_2|$) between them.
+#
+# To get the full marks, you should declare correctly the type hints and add a test within a doctest string.
+
+pass
+
+# ### Exercise 4 (max 5 points)
+#
+# Consider the `x` and `y` columns as the coordinates in a plane. Add a column `avg_dist_same` to the data with the average distance of each butterfly with respect to the other butterflies collected in the same date (year and month) and in the same subarea.
+#
+# To get the full marks avoid the use of explicit loops.
+
+pass
+
+# ### Exercise 5 (max 3 points)
+#
+# Print the mean `avg_coll_same` for each combination of `organic` and `alternate_management`.
+
+pass
+
+# ### Exercise 6 (max 4 points)
+#
+# Plot a histogram with the number of occurrences of `no_species`. Draw proper axes and a legend.
+
+pass
+
+# ### Exercise 7 (max 3 points)
+#
+# Plot together, using two different colors, the histogram with the density of `avg_coll_same` for `alternate_management` and not-`alternate_management` butterflies.
+#
+
+pass
+
+# ### Exercise 8 (max 5 points)
+#
+# Consider the statistical model where:
+#
+#
+# - $X$ is the standardized value of `x` coordinate ($X = \frac{x - \bar x}{\sigma_x}$ where $\bar x$ is the mean, and $\sigma_x$ the standard deviation)
+# - $Y$ is the standardized value of `y` coordinate ($Y = \frac{y - \bar y}{\sigma_y}$ where $\bar y$ is the mean, and $\sigma_y$ the standard deviation)
+# - $\alpha$ is a parameter normally distributed with mean $=0$ and standard deviation $=2$
+# - $\beta$ is a parameter normally distributed with mean $=0$ and standard deviation $=2$
+# - $\sigma$ is a parameter exponentially distributed with $\lambda = 1$
+# - $Y$ is normally distributed with mean $= \alpha + \beta\cdot X$ and standard deviation $\sigma$
+#
+#
+# Code this model with pymc, sample the model under the observations in the data, and print the summary of the resulting estimation by using `az.summary`.
+#
+#
+#
+#
+
+
+pass
