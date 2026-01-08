@@ -1,0 +1,18 @@
+# Exercise 2: Scatterplot using Matplotlib only
+plt.figure(figsize=(10, 6))
+
+# Loop through each unique subarea to plot them separately with their own color
+for subarea in df['subarea'].unique():
+    subset = df[df['subarea'] == subarea]
+    plt.scatter(subset['x'], subset['y'], label=subarea, alpha=0.7)
+
+# Adding titles and labels
+plt.title('Butterfly Population: x vs y by Subarea', fontsize=14)
+plt.xlabel('x coordinate')
+plt.ylabel('y coordinate')
+
+# Add the legend
+plt.legend(title='Subarea', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+plt.tight_layout()
+plt.show()
