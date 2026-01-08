@@ -1,0 +1,21 @@
+def compute_avg_manhattan_dist(group: pd.DataFrame) -> pd.Series:
+    N = len(group)
+    if N <= 1:
+        return pd.Series(0.0, index=group.index)
+
+    x = group['x'].to_numpy()
+    y = group['y'].to_numpy()
+
+    # Coordinate in forma vettoriale
+    p1 = (x[:, None], y[:, None])
+    p2 = (x[None, :], y[None, :])
+
+    dist_matrix = mdistance(p1, p2)
+    avg_dist = dist_matrix.sum(axis=1) / (N - 1)
+
+    return pd.Series(avg_dist, index=group.index)
+
+df['avg_dist_same'] = (
+    df.groupby(['year', 'month', 'subarea'], group_keys=False)[['x', 'y']]
+      .apply(compute_avg_manhattan_dist)
+    )
